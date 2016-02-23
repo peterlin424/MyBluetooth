@@ -186,16 +186,107 @@ public class BluetoothUnit {
     /**
      * 交換數據
      * */
-    private String MY_UUID_SECURE = "peter";
-    private class ConnectThread extends Thread{
-        private BluetoothSocket socket;
-        private BluetoothDevice device;
-        public ConnectThread (BluetoothDevice device, boolean secure){
-            this.device = device;
-            BluetoothSocket temp = null;
-            try {
-                temp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID_SECURE);
-            }
-        }
-    }
+//    private UUID MY_UUID_SECURE = UUID.fromString(UUID_KEY);
+//    private String NAME_SECURE = "peter";
+//    private class ConnectThread extends Thread{
+//        private BluetoothSocket socket;
+//        private BluetoothDevice device;
+//        public ConnectThread (BluetoothDevice device, boolean secure){
+//            this.device = device;
+//            BluetoothSocket temp = null;
+//            try {
+//                temp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID_SECURE);
+//            } catch (IOException e){
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app create() failed");
+//            }
+//        }
+//
+//        public void run(){
+//            mBluetoothAdapter.cancelDiscovery(); // 取消設備查詢
+//            try{
+//                socket.connect();
+//            } catch (IOException e){
+//                try {
+//                    socket.close();
+//                } catch (IOException e1){
+//                    e1.printStackTrace();
+//                    PLog.e(Pub.TAG, "app unable to close() socket during connection failure");
+//                }
+//
+//                connetionFailed();
+//                return;
+//            }
+//        }
+//
+//        public void cancel(){
+//            try{
+//                socket.close();
+//            } catch (IOException e){
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app close() of connect socket failed");
+//            }
+//        }
+//    }
+
+    /**
+     * 建立數據通信線程
+     * */
+//    private class ConnectedThread extends Thread {
+//
+//        private BluetoothSocket socket;
+//        private InputStream inputStream;
+//        private OutputStream outputStream;
+//
+//        public ConnectedThread(BluetoothSocket socket) {
+//            this.socket = socket;
+//            try {
+//                // 獲取 輸入/輸出 串流
+//                inputStream = socket.getInputStream();
+//                outputStream = socket.getOutputStream();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app temp sockets not created");
+//            }
+//        }
+//
+//        public void run() {
+//            byte[] buff = new byte[1024];
+//            int len = 0;
+//            // 讀數據需不斷監聽, 寫不需要
+//            while (true){
+//                try {
+//                    len = inputStream.read(buff);
+//                    // 把讀取到的數據發送給 ui 進行顯示
+//                    Message msg = handler.obtainMessage(BluetoothChat.MESSAGE_READ, len, -1, buff);
+//                    msg.sendToTarget();
+//                } catch (IOException e){
+//                    e.printStackTrace();
+//                    PLog.e(Pub.TAG, "app disconnected");
+//                    connectionLost();
+//                    start();
+//                    break;
+//                }
+//            }
+//        }
+//
+//        public void write(byte[] buffer){
+//            try {
+//                outputStream.write(buffer);
+//                handler.obtainMessage(BluetoothChat.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
+//            } catch (IOException e){
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app Exception during write");
+//            }
+//        }
+//
+//        public void cancel(){
+//            try {
+//                socket.close();
+//            } catch (IOException e){
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app close() of connect socket failed");
+//            }
+//        }
+//    }
 }
