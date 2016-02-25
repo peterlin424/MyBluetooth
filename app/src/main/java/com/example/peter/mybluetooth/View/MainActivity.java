@@ -1,4 +1,4 @@
-package com.example.peter.mybluetooth;
+package com.example.peter.mybluetooth.View;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -8,10 +8,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, BluetoothUnit.BTActionLisener{
+import com.example.peter.mybluetooth.Unit.PLog;
+import com.example.peter.mybluetooth.Unit.Pub;
+import com.example.peter.mybluetooth.R;
+import com.example.peter.mybluetooth.Unit.BluetoothUnit;
 
-    private BluetoothUnit bluetooth = new BluetoothUnit(this, this);
+import java.util.ArrayList;
 
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private BluetoothUnit bluetooth = new BluetoothUnit(this);
+    private DeviceListDialog dialog = new DeviceListDialog(this);
+
+    // TODO 目前只成功搜尋到已經配對過的裝置，需要確認
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,9 +96,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_search:
                 bluetooth.ensureDiscoverable();
                 BluetoothDevice[] pairedDevices = bluetooth.searchPairedDeviceList();
+                final BluetoothDevice[][] newDevices = new BluetoothDevice[1][1];
+                final ArrayList<BluetoothDevice> temp = new ArrayList<>();
+                bluetooth.searchDeviceList(new BluetoothUnit.BTActionLisener() {
+                    @Override
+                    public void receiveDevice(BluetoothDevice device) {
+                        temp.add(device);
+                    }
 
-                // TODO show and select device
-                bluetooth.searchDeviceList();
+                    @Override
+                    public void receiveFinished() {
+                        newDevices[0] = new BluetoothDevice[temp.size()];
+                        for (int i=0; i<temp.size(); ++i){
+                            newDevices[0][i] = temp.get(i);
+                        }
+                    }
+                });
+
+                dialog.init(pairedDevices, newDevices[0], new DeviceListDialog.clickListener() {
+                    @Override
+                    public void scan() {
+                        // TODO 再次掃描
+                        PLog.e(Pub.TAG, "dialog scan button click.");
+                    }
+                });
+                dialog.show();
+
                 break;
 
             case R.id.bt_send:
@@ -98,15 +130,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.bt_close:
                 break;
         }
-    }
-
-    @Override
-    public void receiveDevice(BluetoothDevice device) {
-
-    }
-
-    @Override
-    public void receiveFinished() {
-
     }
 }

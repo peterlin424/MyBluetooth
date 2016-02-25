@@ -1,18 +1,14 @@
-package com.example.peter.mybluetooth;
+package com.example.peter.mybluetooth.Unit;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.FragmentActivity;
 
-import java.io.IOException;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Created by Peter on 16/2/19.
@@ -35,10 +31,9 @@ public class BluetoothUnit {
 
     private BTActionLisener lisener;
 
-    public BluetoothUnit(Context c, BTActionLisener lisener){
+    public BluetoothUnit(Context c){
         this.context = c;
         this.activity = (FragmentActivity)c;
-        this.lisener = lisener;
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
@@ -103,33 +98,32 @@ public class BluetoothUnit {
     /**
      * 搜尋新裝置
      * */
-    // TODO 尚未成功搜尋回傳
-    private IntentFilter filter;
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            switch (action){
-                case BluetoothDevice.ACTION_FOUND:
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // 已經配對過的則跳過
-                    if (device.getBondState() != BluetoothDevice.BOND_BONDED){
-                        // 儲存取得的裝置 device
-                        PLog.e(Pub.TAG, "+++ SEARCH DEVICE : " + device.getName() + " +++");
-                        lisener.receiveDevice(device);
-                    }
-                    break;
-                case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
-                    // 搜尋結束
-                    PLog.e(Pub.TAG, "+++ SEARCH FINISHED +++");
-                    lisener.receiveFinished();
-                    break;
+            // ����ҵ��豸
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                // 已經配對過的則跳過
+                if (device.getBondState() != BluetoothDevice.BOND_BONDED){
+                    // 儲存取得的裝置 device
+                    PLog.e(Pub.TAG, "+++ SEARCH DEVICE : " + device.getName() + " +++");
+                    lisener.receiveDevice(device);
+                }
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                // 搜尋結束
+                PLog.e(Pub.TAG, "+++ SEARCH FINISHED +++");
+                lisener.receiveFinished();
             }
         }
     };
-    public void searchDeviceList(){
+    public void searchDeviceList(BTActionLisener lisener){
+        this.lisener = lisener;
+
         // 註冊，當一個裝置被發現時調用 onReceive
-        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         activity.registerReceiver(mReceiver, filter);
 
         // 當搜尋結束後調用 onReceive
@@ -140,48 +134,48 @@ public class BluetoothUnit {
     /**
      * 建立連結
      * */
-    private UUID MY_UUID = UUID.fromString(UUID_KEY);
-    private String NAME_INSECURE = "peter";
-    private class AcceptThread extends Thread {
-        private BluetoothServerSocket serverSocket;
-
-        public AcceptThread(boolean secure){
-            BluetoothServerSocket temp = null;
-            try {
-                temp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME_INSECURE, MY_UUID);
-            } catch (IOException e) {
-                e.printStackTrace();
-                PLog.e(Pub.TAG, "app listen() failed");
-            }
-            serverSocket = temp;
-        }
-
-        public void run(){
-            BluetoothSocket socket = null;
-            while (true){
-                try {
-                    socket = serverSocket.accept();
-                } catch (Exception e){
-                    e.printStackTrace();
-                    PLog.e(Pub.TAG, "app accept() failed");
-                    break;
-                }
-            }
-            if (socket != null){
-                // TODO 可新建一個數據交換線程，把此 socket 傳入
-            }
-        }
-
-        // 取消監聽
-        public void cancel(){
-            try {
-                serverSocket.close();
-            } catch (Exception e){
-                e.printStackTrace();
-                PLog.e(Pub.TAG, "app close() failed");
-            }
-        }
-    }
+//    private UUID MY_UUID = UUID.fromString(UUID_KEY);
+//    private String NAME_INSECURE = "peter";
+//    private class AcceptThread extends Thread {
+//        private BluetoothServerSocket serverSocket;
+//
+//        public AcceptThread(boolean secure){
+//            BluetoothServerSocket temp = null;
+//            try {
+//                temp = mBluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME_INSECURE, MY_UUID);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app listen() failed");
+//            }
+//            serverSocket = temp;
+//        }
+//
+//        public void run(){
+//            BluetoothSocket socket = null;
+//            while (true){
+//                try {
+//                    socket = serverSocket.accept();
+//                } catch (Exception e){
+//                    e.printStackTrace();
+//                    PLog.e(Pub.TAG, "app accept() failed");
+//                    break;
+//                }
+//            }
+//            if (socket != null){
+//                // TODO 可新建一個數據交換線程，把此 socket 傳入
+//            }
+//        }
+//
+//        // 取消監聽
+//        public void cancel(){
+//            try {
+//                serverSocket.close();
+//            } catch (Exception e){
+//                e.printStackTrace();
+//                PLog.e(Pub.TAG, "app close() failed");
+//            }
+//        }
+//    }
 
     /**
      * 交換數據

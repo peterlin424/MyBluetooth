@@ -1,4 +1,4 @@
-package com.example.peter.mybluetooth;
+package com.example.peter.mybluetooth.Unit;
 
 import android.util.Log;
 

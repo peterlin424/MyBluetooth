@@ -12,4 +12,24 @@
     tools:context="com.example.peter.mybluetooth.Main2Activity"
     tools:showIn="@layout/activity_main2">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:gravity="center"
+        >
+        <EditText android:id="@+id/edit_text_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:hint="@string/hint"
+            />
+        <Button android:id="@+id/button_send"
+            android:layout_width="100dip"
+            android:layout_height="wrap_content"
+            android:text="@string/send"
+            />
+    </LinearLayout>
 </RelativeLayout>
